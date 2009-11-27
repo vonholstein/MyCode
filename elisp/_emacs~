@@ -1,0 +1,66 @@
+;(menu-bar-mode 0)
+(tool-bar-mode 0)
+(global-font-lock-mode t)
+(setq load-path (cons "c:/home/lib/emacslib" load-path))
+(add-to-list 'load-path "c:/home/lib/emacslib/ecb")
+;(load "visual-basic-mode.el")
+;(load "vbs-repl.el")
+;(load "findr.el")
+(load-file "c:/home/lib/emacslib/cedet/common/cedet.el")
+(global-ede-mode 1)                      ; Enable the Project management system
+(semantic-load-enable-code-helpers)      ; Enable prototype help and smart completion 
+(global-srecode-minor-mode 1)            ; Enable template insertion menu
+
+
+(require 'visual-basic-mode)
+(require 'vbs-repl)
+(autoload 'findr "findr" "Find file name." t)
+(define-key global-map [(meta control S)] 'findr)
+
+(autoload 'findr-search "findr" "Find text in files." t)
+(define-key global-map [(meta control s)] 'findr-search)
+
+(autoload 'findr-query-replace "findr" "Replace text in files." t)
+(define-key global-map [(meta control r)] 'findr-query-replace)
+
+
+(require 'ecb)
+(require 'ecb-autoloads)
+
+
+(setq ecb-source-path (quote ("C:\QTPFramework\epo\Libraries")))
+
+
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(ecb-options-version "2.40")
+ '(ecb-windows-width 0.25))
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
+
+(put 'dired-find-alternate-file 'disabled nil)
+
+;;Disable creating new buffer on dired goto parent(^)
+     (eval-after-load "dired"
+       ;; don't remove `other-window', the caller expects it to be there
+       '(defun dired-up-directory (&optional other-window)
+          "Run Dired on parent directory of current directory."
+          (interactive "P")
+          (let* ((dir (dired-current-directory))
+     	    (orig (current-buffer))
+     	    (up (file-name-directory (directory-file-name dir))))
+            (or (dired-goto-file (directory-file-name dir))
+     	   ;; Only try dired-goto-subdir if buffer has more than one dir.
+     	   (and (cdr dired-subdir-alist)
+     		(dired-goto-subdir up))
+     	   (progn
+     	     (kill-buffer orig)
+     	     (dired up)
+     	     (dired-goto-file dir))))))

@@ -1,0 +1,24 @@
+;(menu-bar-mode 0)
+(tool-bar-mode 0)
+(global-font-lock-mode t)
+(setq load-path (cons "~/lib/emacslib" load-path))
+
+(put 'dired-find-alternate-file 'disabled nil)
+
+;;Disable creating new buffer on dired goto parent(^)
+     (eval-after-load "dired"
+       ;; don't remove `other-window', the caller expects it to be there
+       '(defun dired-up-directory (&optional other-window)
+          "Run Dired on parent directory of current directory."
+          (interactive "P")
+          (let* ((dir (dired-current-directory))
+     	    (orig (current-buffer))
+     	    (up (file-name-directory (directory-file-name dir))))
+            (or (dired-goto-file (directory-file-name dir))
+     	   ;; Only try dired-goto-subdir if buffer has more than one dir.
+     	   (and (cdr dired-subdir-alist)
+     		(dired-goto-subdir up))
+     	   (progn
+     	     (kill-buffer orig)
+     	     (dired up)
+     	     (dired-goto-file dir))))))
